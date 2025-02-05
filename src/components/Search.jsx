@@ -45,6 +45,7 @@ const Search = () => {
             alignItems: { xs: 'flex-start', md: 'flex-start' },
             bgcolor: '#fff',
             flexDirection: { xs: 'column' },
+            mb: { xs: 1, md: 2 },
             gap: 2,
           }}
         >
@@ -60,21 +61,51 @@ const Search = () => {
             }}
           >
             <FormControl variant="standard" fullWidth size="small">
-              <Select labelId="demo-simple-select-label" id="demo-simple-select" value="10" label="Age" onChange="">
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value="10"
+                label="Age"
+                onChange=""
+                sx={{
+                  color: '#757575',
+                  fontSize: '0.75rem',
+                }}
+              >
                 <MenuItem value={10}>Round Trip</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
             </FormControl>
             <FormControl variant="standard" fullWidth size="small">
-              <Select labelId="demo-simple-select-label1" id="demo-simple-select" value="20" label="Age" onChange="">
+              <Select
+                labelId="demo-simple-select-label1"
+                id="demo-simple-select"
+                value="20"
+                label="Age"
+                onChange=""
+                sx={{
+                  color: '#757575',
+                  fontSize: '0.75rem',
+                }}
+              >
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>1</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
             </FormControl>
             <FormControl variant="standard" fullWidth size="small">
-              <Select labelId="demo-simple-select-label2" id="demo-simple-select" value="30" label="Age" onChange="">
+              <Select
+                labelId="demo-simple-select-label2"
+                id="demo-simple-select"
+                value="30"
+                label="Age"
+                onChange=""
+                sx={{
+                  color: '#757575',
+                  fontSize: '0.75rem',
+                }}
+              >
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Economy</MenuItem>
