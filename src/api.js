@@ -24,3 +24,38 @@ export const fetchAirports = async (query) => {
     return [];
   }
 };
+
+export const searchFlights = async ({
+  originSkyId,
+  destinationSkyId,
+  originEntityId,
+  destinationEntityId,
+  date,
+  cabinClass,
+  adults,
+  currency = 'EUR',
+}) => {
+  try {
+    const response = await axios.get(`https://${API_CONFIG.HOST}/api/v2/flights/searchFlights`, {
+      params: {
+        originSkyId,
+        destinationSkyId,
+        originEntityId,
+        destinationEntityId,
+        date,
+        cabinClass,
+        adults,
+        sortBy: 'best',
+        currency,
+      },
+      headers: {
+        'x-rapidapi-host': API_CONFIG.HOST,
+        'x-rapidapi-key': API_CONFIG.KEY,
+      },
+    });
+    return response.data.data || [];
+  } catch (error) {
+    console.error('Error fetching flights:', error);
+    return [];
+  }
+};
