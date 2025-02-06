@@ -8,7 +8,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { fetchAirports } from '../api';
 
 const Search = () => {
   const [trip, setTrip] = useState('round-trip');
@@ -19,37 +19,17 @@ const Search = () => {
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
 
-  // Function to fetch airport suggestions
-  const fetchAirports = async (query, setOptions) => {
-    if (!query) return;
-    try {
-      const response = await axios.get('https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport', {
-        params: { query },
-        headers: {
-          'x-rapidapi-host': 'sky-scrapper.p.rapidapi.com',
-          'x-rapidapi-key': '3970bc9575msheb2d7b19f6303e8p143f4cjsn531c46728060',
-        },
-      });
-      const airports = response.data.data || [];
-      setOptions(airports.map((airport) => ({ entityId: airport.entityId, skyId: airport.skyId, name: airport.navigation.localizedName })));
-    } catch (error) {
-      console.error('Error fetching airports:', error);
-    }
-  };
-
-  // Effect to fetch origin airport suggestions
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchAirports(origin, setOriginOptions);
-    }, 250); // Debounce API calls
+    const delayDebounceFn = setTimeout(async () => {
+      setOriginOptions(await fetchAirports(origin));
+    }, 250);
 
     return () => clearTimeout(delayDebounceFn);
   }, [origin]);
 
-  // Effect to fetch destination airport suggestions
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchAirports(destination, setDestinationOptions);
+    const delayDebounceFn = setTimeout(async () => {
+      setDestinationOptions(await fetchAirports(destination));
     }, 250);
 
     return () => clearTimeout(delayDebounceFn);
@@ -159,7 +139,7 @@ const Search = () => {
             <Autocomplete
               size="small"
               options={originOptions}
-              getOptionLabel={(option) => `${option.name} (${option.skyId})`}
+              getOptionLabel={(option) => `${option.skyId} (${option.name})`}
               onInputChange={(event, newValue) => setOrigin(newValue)}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
@@ -182,7 +162,7 @@ const Search = () => {
             <Autocomplete
               size="small"
               options={destinationOptions}
-              getOptionLabel={(option) => `${option.name} (${option.skyId})`}
+              getOptionLabel={(option) => `${option.skyId} (${option.name})`}
               onInputChange={(event, newValue) => setDestination(newValue)}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
