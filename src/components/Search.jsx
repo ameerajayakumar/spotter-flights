@@ -8,32 +8,64 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import { useEffect, useState } from 'react';
-import { fetchAirports } from '../api';
+import { fetchAirports, searchFlights } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
   const [trip, setTrip] = useState('round-trip');
   const [count, setCount] = useState(1);
   const [seat, setSeat] = useState('economy');
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
+  const [date, setDate] = useState(null);
+  const [originInput, setOriginInput] = useState('');
+  const [destinationInput, setDestinationInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
-      setOriginOptions(await fetchAirports(origin));
+      setOriginOptions(await fetchAirports(originInput));
     }, 250);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [origin]);
+  }, [originInput]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
-      setDestinationOptions(await fetchAirports(destination));
+      setDestinationOptions(await fetchAirports(destinationInput));
     }, 250);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [destination]);
+  }, [destinationInput]);
+
+  const handleSearch = async () => {
+    if (!origin || !destination || !date) {
+      alert('Please fill all required fields.');
+      return;
+    }
+    setLoading(true);
+
+    if (!origin || !destination) {
+      alert('Invalid origin or destination.');
+      return;
+    }
+
+    const flightResults = await searchFlights({
+      originSkyId: origin.skyId,
+      destinationSkyId: destination.skyId,
+      originEntityId: origin.entityId,
+      destinationEntityId: destination.entityId,
+      date: date.format('YYYY-MM-DD'),
+      cabinClass: seat,
+      adults: count,
+    });
+
+    setLoading(false);
+    navigate('/results', { state: { flights: flightResults } });
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} height="85vh">
@@ -140,7 +172,17 @@ const Search = () => {
               size="small"
               options={originOptions}
               getOptionLabel={(option) => `${option.skyId} (${option.name})`}
-              onInputChange={(event, newValue) => setOrigin(newValue)}
+              onInputChange={(event, newValue) => setOriginInput(newValue)}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setOrigin({
+                    entityId: newValue.entityId,
+                    skyId: newValue.skyId,
+                  });
+                } else {
+                  setOrigin(null);
+                }
+              }}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
                 <TextField
@@ -163,7 +205,17 @@ const Search = () => {
               size="small"
               options={destinationOptions}
               getOptionLabel={(option) => `${option.skyId} (${option.name})`}
-              onInputChange={(event, newValue) => setDestination(newValue)}
+              onInputChange={(event, newValue) => setDestinationInput(newValue)}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setDestination({
+                    entityId: newValue.entityId,
+                    skyId: newValue.skyId,
+                  });
+                } else {
+                  setDestination(null);
+                }
+              }}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
                 <TextField
@@ -185,6 +237,8 @@ const Search = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Outbound"
+                value={date}
+                onChange={(newDate) => setDate(newDate)}
                 slotProps={{
                   textField: {
                     size: 'small',
@@ -210,13 +264,20 @@ const Search = () => {
             </LocalizationProvider>
           </Stack>
         </Stack>
-        <Button
-          variant="outlined"
-          startIcon={<SearchIcon />}
-          sx={{ color: '#70AAD4', borderColor: '#70AAD4', '&:hover': { borderColor: '#70AAD4', backgroundColor: '#E2F5FC' } }}
-        >
-          Search
-        </Button>
+        {loading ? (
+          <Typography variant="h6" color="gray">
+            Searching...
+          </Typography>
+        ) : (
+          <Button
+            variant="outlined"
+            startIcon={<SearchIcon />}
+            sx={{ color: '#70AAD4', borderColor: '#70AAD4', '&:hover': { borderColor: '#70AAD4', backgroundColor: '#E2F5FC' } }}
+            onClick={handleSearch}
+          >
+            Search
+          </Button>
+        )}
       </Stack>
     </Box>
   );
