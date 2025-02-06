@@ -7,54 +7,22 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 
 const Search = () => {
   const [trip, setTrip] = useState('round-trip');
   const [count, setCount] = useState(1);
   const [seat, setSeat] = useState('economy');
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
-  const [originOptions, setOriginOptions] = useState([]);
-  const [destinationOptions, setDestinationOptions] = useState([]);
 
-  // Function to fetch airport suggestions
-  const fetchAirports = async (query, setOptions) => {
-    if (!query) return;
-    try {
-      const response = await axios.get('https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport', {
-        params: { query },
-        headers: {
-          'x-rapidapi-host': 'sky-scrapper.p.rapidapi.com',
-          'x-rapidapi-key': '3970bc9575msheb2d7b19f6303e8p143f4cjsn531c46728060',
-        },
-      });
-      const airports = response.data.data || [];
-      setOptions(airports.map((airport) => ({ entityId: airport.entityId, skyId: airport.skyId, name: airport.navigation.localizedName })));
-    } catch (error) {
-      console.error('Error fetching airports:', error);
-    }
-  };
-
-  // Effect to fetch origin airport suggestions
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchAirports(origin, setOriginOptions);
-    }, 250); // Debounce API calls
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [origin]);
-
-  // Effect to fetch destination airport suggestions
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchAirports(destination, setDestinationOptions);
-    }, 250);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [destination]);
-
+  const top100Films = [
+    { label: 'The Shawshank Redemption', year: 1994 },
+    { label: 'The Godfather', year: 1972 },
+    { label: 'The Godfather: Part II', year: 1974 },
+    { label: 'The Dark Knight', year: 2008 },
+    { label: '12 Angry Men', year: 1957 },
+    { label: "Schindler's List", year: 1993 },
+    { label: 'Pulp Fiction', year: 1994 },
+  ];
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }} height="85vh">
       <Typography variant="h3" color="#739fff" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: { xs: 4, md: 10 } }}>
@@ -75,6 +43,8 @@ const Search = () => {
         }}
       >
         <Stack
+          //   minWidth="50%"
+          //   maxWidth="90%"
           sx={{
             justifyContent: { xs: 'flex-start', md: 'flex-start' },
             alignItems: { xs: 'flex-start', md: 'flex-start' },
@@ -85,6 +55,7 @@ const Search = () => {
           }}
         >
           <Stack
+            // maxWidth="90%"
             sx={{
               justifyContent: 'flex-start',
               alignItems: { xs: 'flex-start', md: 'flex-start' },
@@ -152,81 +123,63 @@ const Search = () => {
             sx={{
               justifyContent: 'flex-start',
               alignItems: { xs: 'flex-start', md: 'center' },
+              // bgcolor: '#fff',
+              // px: { xs: 3, sm: 5 },
+              // py: { xs: 2, sm: 3 },
+              // borderRadius: '7px',
               flexDirection: { xs: 'column', md: 'row' },
               gap: 2,
             }}
           >
             <Autocomplete
               size="small"
-              options={originOptions}
-              getOptionLabel={(option) => `${option.name} (${option.skyId})`}
-              onInputChange={(event, newValue) => setOrigin(newValue)}
+              disablePortal
+              options={top100Films}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   placeholder="Where from?"
                   label="Origin"
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <FlightTakeoffIcon />
-                      </InputAdornment>
-                    ),
-                    sx: { fontSize: '0.85rem' },
+                  slotProps={{
+                    input: {
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FlightTakeoffIcon />
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
               )}
             />
             <Autocomplete
               size="small"
-              options={destinationOptions}
-              getOptionLabel={(option) => `${option.name} (${option.skyId})`}
-              onInputChange={(event, newValue) => setDestination(newValue)}
+              disablePortal
+              options={top100Films}
               sx={{ width: { xs: '70%', sm: 300 } }}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   placeholder="Where to?"
                   label="Destination"
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <FlightLandIcon />
-                      </InputAdornment>
-                    ),
-                    sx: { fontSize: '0.85rem' },
+                  slotProps={{
+                    input: {
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <FlightLandIcon />
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
               )}
             />
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Outbound"
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    sx: {
-                      '& .MuiInputBase-input': { fontSize: '0.85rem' },
-                      '& .MuiInputLabel-root': { fontSize: '0.85rem' },
-                    },
-                  },
-                }}
-              />
-              <DatePicker
-                label="Inbound"
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    sx: {
-                      '& .MuiInputBase-input': { fontSize: '0.85rem' },
-                      '& .MuiInputLabel-root': { fontSize: '0.85rem' },
-                    },
-                  },
-                }}
-              />
+              <DatePicker label="Outbound" slotProps={{ textField: { size: 'small' } }} />
+              <DatePicker label="Inbound" slotProps={{ textField: { size: 'small' } }} />
             </LocalizationProvider>
           </Stack>
         </Stack>
