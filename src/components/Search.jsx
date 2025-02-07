@@ -64,7 +64,7 @@ const Search = () => {
     });
 
     setLoading(false);
-    navigate('/results', { state: { flights: flightResults } });
+    navigate('/results', { state: { flights: flightResults, adults: count, cabinClass: seat } });
   };
 
   return (

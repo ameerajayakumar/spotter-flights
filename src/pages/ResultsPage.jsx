@@ -1,86 +1,199 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Card, CardContent, Typography, Grid, Divider, Button } from '@mui/material';
 import { useEffect } from 'react';
+import { useMediaQuery, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Typography, Box } from '@mui/material';
+import { format } from 'date-fns';
 
 const Results = () => {
   const location = useLocation();
   const flights = location.state?.flights;
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery('(max-width: 600px)');
 
   useEffect(() => {
-    if (!flights || flights.length < 0) {
+    if (!flights || flights.length === 0) {
       navigate('/');
     }
   }, [flights, navigate]);
 
+  const from = flights?.itineraries?.[0]?.legs[0]?.origin.displayCode || 'Unknown';
+  const to = flights?.itineraries?.[0]?.legs[0]?.destination.displayCode || 'Unknown';
+  const passengers = location.state?.adults > 1 ? `${location.state.adults} travellers` : '1 Adult';
+  const travelClass = location.state?.cabinClass ? location.state.cabinClass.charAt(0).toUpperCase() + location.state.cabinClass.slice(1) : 'Economy';
+
+  const formatTime = (time) => {
+    return format(new Date(time), 'h:mm a');
+  };
+
+  const formatDuration = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}min`;
+  };
+
   return (
-    <Grid container spacing={2} justifyContent="center">
-      {flights &&
-        flights.itineraries &&
-        flights.itineraries.map((itinerary) => (
-          <Grid item xs={12} sm={6} md={4} key={itinerary.id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Price: {itinerary.price.formatted}
-                </Typography>
-                <Divider />
+    <>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          position: 'relative',
+          mb: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={() => navigate('/')}
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            zIndex: 1,
+            backgroundColor: '#739fff',
+            padding: isSmallScreen ? '6px 12px' : '9px 12px',
+            fontSize: isSmallScreen ? '0.5rem' : '0.7rem',
+          }}
+        >
+          Back
+        </Button>
+        <Typography
+          variant="h5"
+          sx={{
+            textAlign: 'center',
+            color: '#739fff',
+            fontSize: isSmallScreen ? '1rem' : '1.5rem',
+            flexGrow: 1,
+            mb: 2,
+            mt: isSmallScreen ? 2 : 4,
+          }}
+        >
+          {from} - {to} . {passengers}, {travelClass}
+        </Typography>
+      </Box>
 
-                <Typography variant="subtitle1" gutterBottom>
-                  <strong>Departure:</strong> {itinerary.legs[0].departure}
-                </Typography>
-                <Typography variant="subtitle2" color="textSecondary">
-                  {itinerary.legs[0].origin.name} to {itinerary.legs[0].destination.name}
-                </Typography>
-
-                <Typography variant="subtitle1" gutterBottom>
-                  <strong>Arrival:</strong> {itinerary.legs[0].arrival}
-                </Typography>
-                <Typography variant="subtitle2" color="textSecondary">
-                  {itinerary.legs[0].destination.name}
-                </Typography>
-
-                <Divider sx={{ marginY: 2 }} />
-
-                <Typography variant="body2">
-                  <strong>Airline:</strong> {itinerary.legs[0].carriers.marketing[0].name}
-                </Typography>
-                <img
-                  src={itinerary.legs[0].carriers.marketing[0].logoUrl}
-                  alt={itinerary.legs[0].carriers.marketing[0].name}
-                  width={30}
-                  height={30}
-                />
-
-                <Divider sx={{ marginY: 2 }} />
-
-                <Typography variant="body2">
-                  <strong>Duration:</strong> {itinerary.legs[0].durationInMinutes} minutes
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Stop Count:</strong> {itinerary.legs[0].stopCount} stop(s)
-                </Typography>
-
-                <Divider sx={{ marginY: 2 }} />
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  href={`https://www.skyscanner.com/transport/flights/${itinerary.legs[0].origin.displayCode}/${
-                    itinerary.legs[0].destination.displayCode
-                  }/${new Date(itinerary.legs[0].departure).getFullYear()}${new Date(itinerary.legs[0].departure).getMonth() + 1}${new Date(
-                    itinerary.legs[0].departure
-                  ).getDate()}`}
-                  target="_blank"
-                >
-                  Book Now
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
+      <TableContainer
+        component={Paper}
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          overflowX: 'auto',
+          maxWidth: '100%', // Ensure full width
+        }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              {isSmallScreen ? (
+                <>
+                  <TableCell>
+                    <strong>Airline</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Time</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Price</strong>
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell>
+                    <strong>Airline</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Departure</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Arrival</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Duration</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Stops</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Price</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Book</strong>
+                  </TableCell>
+                </>
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {flights?.itineraries?.map((itinerary) => (
+              <TableRow
+                key={itinerary.id}
+                sx={{ cursor: 'pointer' }}
+                onClick={() => {
+                  window.open(
+                    `https://www.skyscanner.com/transport/flights/${itinerary.legs[0].origin.displayCode}/${
+                      itinerary.legs[0].destination.displayCode
+                    }/${new Date(itinerary.legs[0].departure).toISOString().slice(2, 10).replace(/-/g, '')}`,
+                    '_blank'
+                  );
+                }}
+              >
+                <TableCell>
+                  <img
+                    src={itinerary.legs[0].carriers.marketing[0].logoUrl}
+                    alt={itinerary.legs[0].carriers.marketing[0].name}
+                    width={30}
+                    height={30}
+                    style={{ marginRight: 8 }}
+                  />
+                  {itinerary.legs[0].carriers.marketing[0].name}
+                </TableCell>
+                {isSmallScreen ? (
+                  <>
+                    <TableCell>
+                      {formatTime(itinerary.legs[0].departure)} - {formatTime(itinerary.legs[0].arrival)}
+                      <br />
+                      {itinerary.legs[0].origin.displayCode} - {itinerary.legs[0].destination.displayCode}
+                      <br />
+                      {itinerary.legs[0].stopCount} stop(s)
+                      <br />
+                      {formatDuration(itinerary.legs[0].durationInMinutes)}
+                    </TableCell>
+                    <TableCell>
+                      <strong>{itinerary.price.formatted}</strong>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>
+                      {itinerary.legs[0].departure} <br />({itinerary.legs[0].origin.name})
+                    </TableCell>
+                    <TableCell>
+                      {itinerary.legs[0].arrival} <br />({itinerary.legs[0].destination.name})
+                    </TableCell>
+                    <TableCell>{formatDuration(itinerary.legs[0].durationInMinutes)}</TableCell>
+                    <TableCell>{itinerary.legs[0].stopCount} stop(s)</TableCell>
+                    <TableCell>
+                      <strong>{itinerary.price.formatted}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        href={`https://www.skyscanner.com/transport/flights/${itinerary.legs[0].origin.displayCode}/${
+                          itinerary.legs[0].destination.displayCode
+                        }/${new Date(itinerary.legs[0].departure).toISOString().slice(2, 10).replace(/-/g, '')}`}
+                        target="_blank"
+                      >
+                        Book Now
+                      </Button>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 
