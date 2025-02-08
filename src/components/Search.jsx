@@ -19,7 +19,8 @@ const Search = () => {
   const [destination, setDestination] = useState(null);
   const [originOptions, setOriginOptions] = useState([]);
   const [destinationOptions, setDestinationOptions] = useState([]);
-  const [date, setDate] = useState(null);
+  const [indate, setIndate] = useState(null);
+  const [outdate, setOutdate] = useState(null);
   const [originInput, setOriginInput] = useState('');
   const [destinationInput, setDestinationInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ const Search = () => {
   }, [destinationInput]);
 
   const handleSearch = async () => {
-    if (!origin || !destination || !date) {
+    if (!origin || !destination || !outdate) {
       alert('Please fill all required fields.');
       return;
     }
@@ -58,7 +59,8 @@ const Search = () => {
       destinationSkyId: destination.skyId,
       originEntityId: origin.entityId,
       destinationEntityId: destination.entityId,
-      date: date.format('YYYY-MM-DD'),
+      date: outdate.format('YYYY-MM-DD'),
+      returnDate: indate ? indate.format('YYYY-MM-DD') : null,
       cabinClass: seat,
       adults: count,
     });
@@ -237,8 +239,8 @@ const Search = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Outbound"
-                value={date}
-                onChange={(newDate) => setDate(newDate)}
+                value={outdate}
+                onChange={(newDate) => setOutdate(newDate)}
                 slotProps={{
                   textField: {
                     size: 'small',
@@ -249,18 +251,22 @@ const Search = () => {
                   },
                 }}
               />
-              <DatePicker
-                label="Inbound"
-                slotProps={{
-                  textField: {
-                    size: 'small',
-                    sx: {
-                      '& .MuiInputBase-input': { fontSize: '0.85rem' },
-                      '& .MuiInputLabel-root': { fontSize: '0.85rem' },
+              {trip === 'round-trip' && (
+                <DatePicker
+                  label="Inbound"
+                  value={indate}
+                  onChange={(newDate) => setIndate(newDate)}
+                  slotProps={{
+                    textField: {
+                      size: 'small',
+                      sx: {
+                        '& .MuiInputBase-input': { fontSize: '0.85rem' },
+                        '& .MuiInputLabel-root': { fontSize: '0.85rem' },
+                      },
                     },
-                  },
-                }}
-              />
+                  }}
+                />
+              )}
             </LocalizationProvider>
           </Stack>
         </Stack>

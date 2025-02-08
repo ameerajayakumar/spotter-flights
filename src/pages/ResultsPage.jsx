@@ -190,6 +190,77 @@ const Results = () => {
                 )}
               </TableRow>
             ))}
+            {/* Displaying return flights (legs[1]) if available */}
+            {flights?.itineraries?.map(
+              (itinerary) =>
+                itinerary.legs[1] && (
+                  <TableRow
+                    key={`return-${itinerary.id}`}
+                    sx={{ cursor: 'pointer', backgroundColor: '#f5f5f5' }}
+                    onClick={() => {
+                      window.open(
+                        `https://www.skyscanner.com/transport/flights/${itinerary.legs[1].origin.displayCode}/${
+                          itinerary.legs[1].destination.displayCode
+                        }/${new Date(itinerary.legs[1].departure).toISOString().slice(2, 10).replace(/-/g, '')}`,
+                        '_blank'
+                      );
+                    }}
+                  >
+                    <TableCell>
+                      <img
+                        src={itinerary.legs[1].carriers.marketing[0].logoUrl}
+                        alt={itinerary.legs[1].carriers.marketing[0].name}
+                        width={30}
+                        height={30}
+                        style={{ marginRight: 8 }}
+                      />
+                      {itinerary.legs[1].carriers.marketing[0].name}
+                    </TableCell>
+                    {isSmallScreen ? (
+                      <>
+                        <TableCell>
+                          {formatTime(itinerary.legs[1].departure)} - {formatTime(itinerary.legs[1].arrival)}
+                          <br />
+                          {itinerary.legs[1].origin.displayCode} - {itinerary.legs[1].destination.displayCode}
+                          <br />
+                          {itinerary.legs[1].stopCount} stop(s)
+                          <br />
+                          {formatDuration(itinerary.legs[1].durationInMinutes)}
+                        </TableCell>
+                        <TableCell>
+                          <strong>{itinerary.price.formatted}</strong>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell>
+                          {itinerary.legs[1].departure} <br />({itinerary.legs[1].origin.name})
+                        </TableCell>
+                        <TableCell>
+                          {itinerary.legs[1].arrival} <br />({itinerary.legs[1].destination.name})
+                        </TableCell>
+                        <TableCell>{formatDuration(itinerary.legs[1].durationInMinutes)}</TableCell>
+                        <TableCell>{itinerary.legs[1].stopCount} stop(s)</TableCell>
+                        <TableCell>
+                          <strong>{itinerary.price.formatted}</strong>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            href={`https://www.skyscanner.com/transport/flights/${itinerary.legs[1].origin.displayCode}/${
+                              itinerary.legs[1].destination.displayCode
+                            }/${new Date(itinerary.legs[1].departure).toISOString().slice(2, 10).replace(/-/g, '')}`}
+                            target="_blank"
+                          >
+                            Book Now
+                          </Button>
+                        </TableCell>
+                      </>
+                    )}
+                  </TableRow>
+                )
+            )}
           </TableBody>
         </Table>
       </TableContainer>
