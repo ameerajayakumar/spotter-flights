@@ -9,21 +9,23 @@ Results Page: displays the list of onward and return flight details with default
 
 Clicking on Book now button on large screens or on flight row takes user to skyscanner page to move ahead with booking flights for the searched input.
 
-# API used: https://rapidapi.com/apiheya/api/sky-scrapper
+# API used:
+
+https://rapidapi.com/apiheya/api/sky-scrapper
 
 # Tech & Libraries used:
 
-Vite - for creating the react app
-React
-Material UI
-Date-pickers
-Axios
-React Router
+- Vite - for creating the react app
+- React
+- Material UI
+- Date-pickers
+- Axios
+- React Router
 
 # Run locally:
 
 - Git clone repo
-- Inside project folder, run:
+  Inside project folder, run:
 - npm install
 - npm run dev
 
