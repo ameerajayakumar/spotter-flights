@@ -20,6 +20,8 @@ const Results = () => {
   const passengers = location.state?.adults > 1 ? `${location.state.adults} travellers` : '1 Adult';
   const travelClass = location.state?.cabinClass ? location.state.cabinClass.charAt(0).toUpperCase() + location.state.cabinClass.slice(1) : 'Economy';
 
+  const inboundFlights = flights?.itineraries?.filter((itinerary) => itinerary.legs.length > 1);
+
   const formatTime = (time) => {
     return format(new Date(time), 'h:mm a');
   };
@@ -190,7 +192,35 @@ const Results = () => {
                 )}
               </TableRow>
             ))}
+
             {/* Displaying return flights (legs[1]) if available */}
+
+            {inboundFlights.length > 0 && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  // position: 'relative',
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  sx={{
+                    textAlign: 'center',
+                    color: '#739fff',
+                    fontSize: isSmallScreen ? '1rem' : '1.2rem',
+                    flexGrow: 1,
+                    mb: 2,
+                    mt: isSmallScreen ? 2 : 4,
+                  }}
+                >
+                  {to} - {from} . {passengers}, {travelClass}
+                </Typography>
+              </Box>
+            )}
             {flights?.itineraries?.map(
               (itinerary) =>
                 itinerary.legs[1] && (
