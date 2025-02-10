@@ -25,7 +25,9 @@ https://rapidapi.com/apiheya/api/sky-scrapper
 # Run locally:
 
 - Git clone repo
-  Inside project folder, run:
+
+Inside project folder, run:
+
 - npm install
 - npm run dev
 
