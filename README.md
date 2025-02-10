@@ -1,8 +1,32 @@
-# React + Vite
+# GoFlights
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive version of Google Flights using React & MUI.
 
-Currently, two official plugins are available:
+The project has two main pages: Search/Home page and List/Results page.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Home Page: contains a search component where users can input outbound and inbound locations, dates and other details like number of adults flying and cabin class.
+Results Page: displays the list of onward and return flight details with default sorting of best.
+
+Clicking on Book now button on large screens or on flight row takes user to skyscanner page to move ahead with booking flights for the searched input.
+
+# API used: https://rapidapi.com/apiheya/api/sky-scrapper
+
+# Tech & Libraries used:
+
+Vite - for creating the react app
+React
+Material UI
+Date-pickers
+Axios
+React Router
+
+# Run locally:
+
+- Git clone repo
+- Inside project folder, run:
+- npm install
+- npm run dev
+
+# Project hosted on:
+
+https://goflights.netlify.app/
